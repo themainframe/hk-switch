@@ -1,0 +1,18 @@
+{
+  "name": "hk-switch",
+  "version": "1.0.0",
+  "description": "Software/firmware for our Raspberry Pi based HomeKit inline switch",
+  "main": "index.js",
+  "repository": "https://github.com/themainframe/hk-switch",
+  "author": "Damien Walsh <me@damow.net>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.16.2",
+    "hap-nodejs": "^0.4.33",
+    "winston": "^2.4.0",
+    "yamljs": "^0.3.0"
+  }
+}

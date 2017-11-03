@@ -1,0 +1,20 @@
+---
+hap_port: 51826
+web_port: 3000
+uuid: walshnet:accessories:hk-switch
+name: Outlet
+manufacturer: Walsh Industries
+model: Rev-1
+serial: A1S2NASF88EW
+username: DE:AD:BE:EE:F0:00
+pincode: 031-45-154
+identify:
+  gpio: 30
+  flash: 10
+  time: 100
+switches:
+  -
+    name: Relay 1
+    gpio: 20
+    invert: false
+    on_default: true
