@@ -8,6 +8,7 @@ const Service = require('hap-nodejs').Service;
 const Characteristic = require('hap-nodejs').Characteristic;
 const uuid = require('hap-nodejs').uuid;
 const storage = require('node-persist');
+const gpio = require('../gpio');
 
 class HomeKitServer {
 
