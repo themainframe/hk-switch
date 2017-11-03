@@ -9,6 +9,8 @@ const yaml = require('yamljs');
 const winston = require('winston');
 const WebInterface = require('./web-interface');
 const HomeKitServer = require('./homekit-server');
+const ConnectivityChecker = require('./connectivity-checker');
+const WLANConfigurer = require('./wlan-configurer');
 
 // Set up Winston for logging
 winston.remove(winston.transports.Console);
@@ -36,3 +38,16 @@ webInterface.start();
 // Start the HomeKit server
 const homeKitServer = new HomeKitServer(config);
 homeKitServer.start();
+
+// Set up WLAN Configurer
+const wlanConfigurer = new WLANConfigurer(config);
+
+// Start the connectivity checker
+const connectivityChecker = new ConnectivityChecker(config);
+
+// When we gain an Internet connection, enter station mode
+connectivityChecker.gainedCallbacks.push(wlanConfigurer.stationMode);
+
+// When we lose an Internet connection, enter AP mode
+connectivityChecker.lostCallbacks.push(wlanConfigurer.accessPointMode);
+connectivityChecker.start();
