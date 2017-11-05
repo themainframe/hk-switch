@@ -53,8 +53,8 @@ class HomeKitServer {
           .getCharacteristic(Characteristic.On)
           .on('set', (value, callback) => {
             winston.info(switchConfig.name, "is changing state, now", value);
-            gpio.write(switchConfig.gpio, !(!(value)), () => {
-              this.stateCache[index] = !(!(value));
+            gpio.write(switchConfig.gpio, value, () => {
+              this.stateCache[index] = value;
               callback();
             });
           })
