@@ -27,7 +27,7 @@ try {
   config = yaml.load(CONFIG_FILE);
   winston.info('loaded', Object.keys(config).length, 'configuration props from', CONFIG_FILE);
 } catch (e) {
-  winston.error('unable to parse configuration file', CONFIG_FILE, 'error:', e);
+  winston.error('unable to parse configuration file', CONFIG_FILE, 'error:', e.message);
   process.exit();
 }
 
