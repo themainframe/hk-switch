@@ -13,14 +13,21 @@ class WLANConfigurer {
 
   accessPointMode () {
     winston.info("switching to AP mode");
+
+
   }
 
   stationMode () {
     winston.info("switching to station mode");
+    const wpa_cli = require('wireless-tools/wpa_cli');
+
+    wpa_cli.status('wlan0', function(err, status) {
+        console.dir(err);
+    });
   }
 
   restartNetworking() {
-    
+
   }
 
 }

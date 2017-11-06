@@ -5,16 +5,14 @@ uuid: walshnet:accessories:hk-switch
 name: Outlet
 manufacturer: Walsh Industries
 model: Rev-1
-serial: A1S2NASF88EW
+serial: IS-01PAULDAMO
 username: DE:AD:BE:EE:F0:00
 pincode: 031-45-154
-identify:
-  gpio: 30
-  flash: 10
-  time: 100
+wlan:
+  ap:
+    ssid: HomeKit Switch
 switches:
   -
     name: Relay 1
-    gpio: 20
-    invert: false
+    gpio: 4
     on_default: true

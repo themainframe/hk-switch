@@ -15,6 +15,7 @@ class HomeKitServer {
   constructor (config) {
     this.config = config;
     this.accessory = null;
+    this.stateCache = {};
   }
 
   start() {
@@ -28,7 +29,7 @@ class HomeKitServer {
 
       // Listen for the accessory being identified
       this.accessory.on('identify', (paired, callback) => {
-        winston.info('we have been asked to identify ourself');
+        winston.info('we have been asked to identify');
         callback();
       });
 
@@ -43,18 +44,23 @@ class HomeKitServer {
         let switchConfig = this.config.switches[index];
         winston.info("adding service for switch", switchConfig.name);
 
+        // Enable the associated GPIO for output
+        gpio.setup(switchConfig.gpio, switchConfig.on_defalt ? gpio.DIR_HIGH : gpio.DIR_LOW);
+        this.stateCache[index] = switchConfig.on_defalt;
+
+        // Add the service for this switch
         this.accessory.addService(Service.Switch, switchConfig.name)
           .getCharacteristic(Characteristic.On)
           .on('set', (value, callback) => {
             winston.info(switchConfig.name, "is changing state, now", value);
-            callback();
-          });
-
-        this.accessory.getService(Service.Switch)
-          .getCharacteristic(Characteristic.On)
+            gpio.write(switchConfig.gpio, value, () => {
+              this.stateCache[index] = value;
+              callback();
+            });
+          })
           .on('get', (callback) => {
-            winston.info(switchConfig.name, "was asked to provide state");
-            callback(null, true);
+            winston.info(switchConfig.name, "was asked to provide state, is currently", this.stateCache[index] ? 1 : 0);
+            callback(null, this.stateCache[index]);
           });
       }
 

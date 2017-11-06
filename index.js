@@ -3,7 +3,7 @@
  * Main executable.
  */
 
-const CONFIG_FILE = 'config.yaml';
+const CONFIG_FILE = 'config.yml';
 
 const yaml = require('yamljs');
 const winston = require('winston');
