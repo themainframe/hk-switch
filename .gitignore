@@ -1,4 +1,4 @@
 .DS_Store
 persist
 node_modules
-*.dist
+config.yml

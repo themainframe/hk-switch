@@ -8,6 +8,9 @@ model: Rev-1
 serial: IS-01PAULDAMO
 username: DE:AD:BE:EE:F0:00
 pincode: 031-45-154
+wlan:
+  ap:
+    ssid: HomeKit Switch
 switches:
   -
     name: Relay 1
