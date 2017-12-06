@@ -4,6 +4,7 @@
 
 const express = require('express');
 const winston = require('winston');
+const path = require('path');
 
 class WebInterface {
 
@@ -11,9 +12,11 @@ class WebInterface {
 
     this.config = config;
     this.app = express();
+    this.app.set('view engine', 'ejs');
+    this.app.set('views', path.join(__dirname, '/views'));
 
-    this.app.get('/', (req, res) => {
-      res.send('Hello World!');
+    this.app.get(['/', '/*'], (req, res) => {
+      res.render('pages/home');
     });
 
   }

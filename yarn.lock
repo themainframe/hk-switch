@@ -76,6 +76,10 @@ buffer-shims@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/buffer-shims/-/buffer-shims-1.0.0.tgz#9978ce317388c649ad8793028c3477ef044a8b51"
 
+bunyan@0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/bunyan/-/bunyan-0.7.0.tgz#921065e70c936fe302a740e2c5605775beea2f42"
+
 bytes@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.0.0.tgz#d32815404d689699f85a4ea4fa8755dd13a96048"
@@ -87,6 +91,10 @@ capture-stack-trace@^1.0.0:
 clean-stack@^1.0.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/clean-stack/-/clean-stack-1.3.0.tgz#9e821501ae979986c46b1d66d2d432db2fd4ae31"
+
+"coffee-script@>= 1.1.1":
+  version "1.12.7"
+  resolved "https://registry.yarnpkg.com/coffee-script/-/coffee-script-1.12.7.tgz#c05dae0cb79591d05b3070a8433a98c9a89ccc53"
 
 colors@1.0.x:
   version "1.0.3"
@@ -147,6 +155,12 @@ destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
 
+"dhcp@https://github.com/themainframe/node-dhcp":
+  version "0.2.9"
+  resolved "https://github.com/themainframe/node-dhcp#db984339c7f9367279468d404b2a37722b223b7d"
+  dependencies:
+    minimist "*"
+
 dns-packet@^1.1.0:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/dns-packet/-/dns-packet-1.2.2.tgz#a8a26bec7646438963fc86e06f8f8b16d6c8bf7a"
@@ -174,6 +188,10 @@ ed25519@^0.0.4:
 ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
+
+ejs@^2.5.0:
+  version "2.5.7"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.5.7.tgz#cc872c168880ae3c7189762fd5ffc00896c9518a"
 
 encodeurl@~1.0.1:
   version "1.0.1"
@@ -342,6 +360,12 @@ ip@^1.1.0, ip@^1.1.3:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/ip/-/ip-1.1.5.tgz#bdded70114290828c0a039e72ef25f5aaec4354a"
 
+ipaddr.js@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-0.1.1.tgz#28c6a7c116a021c555544f906ab1ad540b1d635a"
+  dependencies:
+    coffee-script ">= 1.1.1"
+
 ipaddr.js@1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.5.2.tgz#d4b505bde9946987ccf0fc58d9010ff9607e3fa0"
@@ -420,6 +444,10 @@ minimatch@^3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
+minimist@*:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
+
 minimist@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
@@ -449,6 +477,13 @@ nan@~2.6.2:
 negotiator@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
+
+node-named@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/node-named/-/node-named-0.0.1.tgz#3607b434cf237ab99440f5ff6d19c05e3a93e217"
+  dependencies:
+    bunyan "0.7.0"
+    ipaddr.js "0.1.1"
 
 node-persist@^0.0.11:
   version "0.0.11"
@@ -532,6 +567,10 @@ public-ip@^2.3.0:
     got "^6.7.1"
     is-ip "^2.0.0"
     pify "^2.3.0"
+
+q@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
 
 q@~1.1.1:
   version "1.1.2"

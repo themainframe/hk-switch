@@ -10,7 +10,7 @@ const uuid = require('hap-nodejs').uuid;
 const storage = require('node-persist');
 const gpio = require('../gpio');
 
-class HomeKitServer {
+class HomeKit {
 
   constructor (config) {
     this.config = config;
@@ -77,4 +77,4 @@ class HomeKitServer {
 
 }
 
-module.exports = HomeKitServer;
+module.exports = HomeKit;

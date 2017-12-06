@@ -6,7 +6,7 @@
 const winston = require('winston');
 const isOnline = require('is-online');
 
-class ConnectivityChecker {
+class NetChecker {
 
   constructor (config) {
     this.config = config;
@@ -59,4 +59,4 @@ class ConnectivityChecker {
 
 }
 
-module.exports = ConnectivityChecker;
+module.exports = NetChecker;

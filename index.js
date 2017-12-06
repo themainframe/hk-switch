@@ -7,10 +7,12 @@ const CONFIG_FILE = 'config.yml';
 
 const yaml = require('yamljs');
 const winston = require('winston');
-const WebInterface = require('./web-interface');
-const HomeKitServer = require('./homekit-server');
-const ConnectivityChecker = require('./connectivity-checker');
-const WLANConfigurer = require('./wlan-configurer');
+const WebUI = require('./webui');
+const HomeKit = require('./homekit');
+const NetChecker = require('./net-checker');
+const WLAN = require('./wlan');
+const DHCP = require('./dhcp');
+const DNS = require('./dns');
 
 // Set up Winston for logging
 winston.remove(winston.transports.Console);
@@ -32,22 +34,29 @@ try {
 }
 
 // Start the web GUI
-const webInterface = new WebInterface(config);
+const webInterface = new WebUI(config);
 webInterface.start();
 
 // Start the HomeKit server
-const homeKitServer = new HomeKitServer(config);
+const homeKitServer = new HomeKit(config);
 homeKitServer.start();
 
 // Set up WLAN Configurer
-const wlanConfigurer = new WLANConfigurer(config);
+const wlanConfigurer = new WLAN(config);
 
 // Start the connectivity checker
-const connectivityChecker = new ConnectivityChecker(config);
+const netChecker = new NetChecker(config);
+
+// Start the DHCP & DNS servers
+const dhcp = new DHCP(config);
+const dns = new DNS(config);
+dhcp.start();
+dns.start();
 
 // When we gain an Internet connection, enter station mode
-connectivityChecker.gainedCallbacks.push(wlanConfigurer.stationMode);
+netChecker.gainedCallbacks.push(wlanConfigurer.stationMode);
 
 // When we lose an Internet connection, enter AP mode
-connectivityChecker.lostCallbacks.push(wlanConfigurer.accessPointMode);
-connectivityChecker.start();
+netChecker.lostCallbacks.push(wlanConfigurer.accessPointMode);
+
+netChecker.start();
