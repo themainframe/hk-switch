@@ -2,3 +2,5 @@
 persist
 node_modules
 config.yml
+*.dist
+Makefile
