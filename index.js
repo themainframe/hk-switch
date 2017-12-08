@@ -7,9 +7,10 @@ const CONFIG_FILE = 'config.yml';
 
 const yaml = require('yamljs');
 const winston = require('winston');
+const storage = require('node-persist');
 const WebUI = require('./webui');
 const HomeKit = require('./homekit');
-const NetChecker = require('./net-checker');
+const NetController = require('./net-controller');
 const WLAN = require('./wlan');
 const DHCP = require('./dhcp');
 const DNS = require('./dns');
@@ -23,6 +24,10 @@ winston.add(winston.transports.Console, {
   timestamp: true
 });
 
+// Initialise storage
+winston.info('initialising storage...');
+storage.initSync();
+
 // Parse the configuration file
 let config = {};
 try {
@@ -33,30 +38,26 @@ try {
   process.exit();
 }
 
-// Start the web GUI
-const webInterface = new WebUI(config);
-webInterface.start();
-
 // Start the HomeKit server
 const homeKitServer = new HomeKit(config);
 homeKitServer.start();
 
 // Set up WLAN Configurer
-const wlanConfigurer = new WLAN(config);
+const wlan = new WLAN(config);
 
-// Start the connectivity checker
-const netChecker = new NetChecker(config);
-
-// Start the DHCP & DNS servers
+// Don't start the DHCP server yet, it's controlled by the network controller (netController)
 const dhcp = new DHCP(config);
+
+// Set up Network controller
+const netController = new NetController(config, wlan, storage, dhcp);
+
+// Start the web GUI
+const webInterface = new WebUI(config, storage, netController, wlan);
+webInterface.start();
+
+// Start the DNS server
 const dns = new DNS(config);
-dhcp.start();
 dns.start();
 
-// When we gain an Internet connection, enter station mode
-netChecker.gainedCallbacks.push(wlanConfigurer.stationMode);
-
-// When we lose an Internet connection, enter AP mode
-netChecker.lostCallbacks.push(wlanConfigurer.accessPointMode);
-
-netChecker.start();
+// Start the network controller
+netController.start();

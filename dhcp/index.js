@@ -11,6 +11,7 @@ class DHCP {
   constructor (config) {
     this.config = config;
     this.server = null;
+    this.running = false;
 
     // Add some custom DHCP options
     dhcpOptions.opts[252] = {
@@ -20,8 +21,12 @@ class DHCP {
     };
   }
 
+  /**
+   * Starts the DHCP server.
+   * Careful not to start this while we're actually connected as a station.
+   */
   start () {
-
+    this.running = true;
     winston.info("starting DHCP server");
     this.server = dhcp.createServer({
       mac: this.config.wlan.mac,
@@ -51,13 +56,15 @@ class DHCP {
 
   }
 
+  /**
+   * Stops the DHCP server.
+   */
   stop () {
-
-    if (this.server) {
+    if (this.server && this.running) {
       winston.info("stopping DHCP server");
       this.server.close();
+      this.running = false;
     }
-
   }
 
 }

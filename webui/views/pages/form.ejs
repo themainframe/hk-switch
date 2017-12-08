@@ -1,0 +1,38 @@
+<%- include('header') -%>
+<div class="container">
+
+  <p class="lead">Please choose your Wi-Fi network and provide the network password.</p>
+
+  <p class="small">
+    If your network does not appear, tap <strong>Refresh</strong>.
+  </p>
+
+  <p class="small">
+    Once connected, HomeKit Switch will stop serving this setup network. The setup network will re-appear if HomeKit Switch cannot reach the configured network.
+  </p>
+
+  <br />
+
+  <form method="post" action="/setup">
+    <div class="form-group">
+      <label for="networkSSID">Network</label>
+      <select class="form-control" id="networkSSID" name="networkSSID">
+        <% networks.forEach(function(network) { %>
+          <% if(network.hasOwnProperty('ssid')) { %>
+          <option value="<%= network.ssid %>"><%= network.ssid %></option>
+          <% } %>
+        <% }); %>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="networkKey">Password</label>
+      <input type="text" class="form-control" id="networkKey" name="networkKey" placeholder="Key">
+    </div>
+    <a href="/" class="btn btn-default pull-left">
+      <span class="glyphicon glyphicon-refresh"></span>&nbsp; Refresh
+    </a>
+    <button type="submit" class="btn btn-success pull-right">Save</button>
+  </form>
+
+</div>
+<%- include('footer') -%>

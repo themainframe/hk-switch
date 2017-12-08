@@ -10,16 +10,19 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "body-parser": "^1.18.2",
+    "bootstrap": "^3",
     "dhcp": "https://github.com/themainframe/node-dhcp",
+    "ejs": "^2.5.0",
     "express": "^4.16.2",
     "hap-nodejs": "^0.4.33",
     "is-online": "^7.0.0",
     "node-named": "^0.0.1",
+    "node-persist": "^0.0.11",
     "q": "^1.5.1",
     "rpi-gpio": "^0.9.1",
     "winston": "^2.4.0",
     "wireless-tools": "^0.19.0",
-    "yamljs": "^0.3.0",
-    "ejs": "^2.5.0"
+    "yamljs": "^0.3.0"
   }
 }
