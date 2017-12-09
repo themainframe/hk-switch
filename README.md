@@ -18,6 +18,6 @@ We'll use `forever` to run the program all the time on our RPi.
 
 * Check out the project to `/home/pi/hk-switch`.
 * `npm install -g forever` as root.
-* Add this line to `root`'s `crontab`: `@reboot /usr/local/bin/forever start /home/pi/hk-switch/forever.json > /dev/null 2>&1`
+* Add this line to `root`'s `crontab`: `@reboot /usr/bin/forever start /home/pi/hk-switch/forever.json > /dev/null 2>&1`
 * Reboot
 * Check `hk-switch` has started with `forever list`
