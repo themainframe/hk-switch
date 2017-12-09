@@ -38,6 +38,10 @@ class NetController {
     // The amount of time between retries in AP mode (if we have credentials)
     this.accessPointModeRetryTime = 60000;
     this.accessPointModeRetryTimeLeft = this.accessPointModeRetryTime;
+
+    // We need to restart the nodejs-hap server right after we get online
+    // keep track of whether we've done this yet
+    this.hasRestartedHapServer = false;
   }
 
   /**
@@ -78,16 +82,11 @@ class NetController {
   stationMode () {
     winston.warn('entering station mode');
 
-    // Start homekit shortly after
-    setTimeout(() => {
-      this.homekit.stop();
-      this.homekit.start();
-    }, 2500);
-
     // Connect to the AP
     let credentials = this.getCredentials();
     this.dhcp.stop();
     this.wlan.stationMode(credentials.ssid, credentials.key);
+    this.hasRestartedHapServer = false;
     this.mode = Mode.STATION;
   }
 
@@ -131,6 +130,13 @@ class NetController {
             // We've gone offline
             winston.warn('we have lost connectivity - switching to AP mode');
             this.accessPointMode();
+          } else {
+            if (!this.hasRestartedHapServer) {
+              winston.info('we are now online - restarting the HAP server');
+              this.homekit.stop();
+              this.homekit.start();
+              this.hasRestartedHapServer = true;
+            }
           }
         });
 

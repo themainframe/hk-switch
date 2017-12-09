@@ -47,16 +47,16 @@ const wlan = new WLAN(config);
 // Don't start the DHCP server yet, it's controlled by the network controller (netController)
 const dhcp = new DHCP(config);
 
+// Start the DNS server
+const dns = new DNS(config);
+dns.start();
+
 // Set up Network controller
 const netController = new NetController(config, wlan, storage, dhcp, homeKit);
 
 // Start the web GUI
 const webInterface = new WebUI(config, storage, netController, wlan);
 webInterface.start();
-
-// Start the DNS server
-const dns = new DNS(config);
-dns.start();
 
 // Start the network controller
 netController.start();
