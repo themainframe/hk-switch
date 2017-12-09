@@ -20,7 +20,7 @@ class WLAN {
       }
       wpa_cli.scan_results(iface, (error, scan_results) => {
         if (error) {
-          winston.warn("failed to issue the scan_results command: ", error);
+          winston.error("failed to issue the scan_results command: ", error);
           return;
         }
         callback(scan_results);
@@ -49,6 +49,12 @@ class WLAN {
 
     let deferred = Q.defer();
     wpa_cli.add_network(this.config.wlan.interface, (err, result) => {
+
+      if (err) {
+        winston.error("error adding network:", err);
+        return;
+      }
+
       let networkId = result.result;
 
       // Set up the AP mode network (other items here)
