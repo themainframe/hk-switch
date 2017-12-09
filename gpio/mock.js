@@ -7,7 +7,7 @@ const winston = require('winston');
 class MockGPIO {
 
   static setup (pin, direction, callback) {
-    winston.info('setup GPIO pin:', pin);
+    winston.info('setup mock GPIO pin:', pin);
     (callback ? callback : () => {}).apply({
       err: null
     });

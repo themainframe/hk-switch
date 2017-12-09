@@ -1,0 +1,7 @@
+{
+  "uid": "hk-switch",
+  "append": true,
+  "watch": true,
+  "script": "index.js",
+  "sourceDir": "/home/pi/hk-switch"
+}
