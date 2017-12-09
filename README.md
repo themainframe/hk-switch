@@ -17,7 +17,9 @@ More to be said here, but essentially to get started copy `config.yml.dist` to `
 We'll use `forever` to run the program all the time on our RPi.
 
 * Check out the project to `/home/pi/hk-switch`.
+* Ensure you have a recent (`>8.0)`) version of Node for the correct architecture (remember Raspberry Pi Zero W is `ARMv6`)
+* Install `yarn` - [https://yarnpkg.com/en/docs/install#linux-tab](https://yarnpkg.com/en/docs/install#linux-tab)
 * `npm install -g forever` as root.
-* Add this line to `root`'s `crontab`: `@reboot sleep 15 && NODE_ENV=prod PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /usr/bin/forever start /home/pi/hk-switch/forever.json > /dev/null 2>&1`
+* Add this line to `root`'s `crontab`: `@reboot sleep 15 && NODE_ENV=prod PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin /usr/local/bin/forever start /home/pi/hk-switch/forever.json > /dev/null 2>&1`
 * Reboot
-* Check `hk-switch` has started with `forever list`
+* Check `hk-switch` has started with `sudo forever list`

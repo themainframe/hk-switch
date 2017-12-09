@@ -75,6 +75,16 @@ class HomeKit {
       winston.info('HomeKit PIN:', this.config.pincode);
   }
 
+  /**
+   * Destroy the current accessory.
+   */
+  stop () {
+    if (this.accessory) {
+      winston.info('stopping hap-nodejs server');
+      this.accessory.destroy();
+    }
+  }
+
 }
 
 module.exports = HomeKit;

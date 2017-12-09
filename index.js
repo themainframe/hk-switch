@@ -39,8 +39,7 @@ try {
 }
 
 // Start the HomeKit server
-const homeKitServer = new HomeKit(config);
-homeKitServer.start();
+const homeKit = new HomeKit(config);
 
 // Set up WLAN Configurer
 const wlan = new WLAN(config);
@@ -49,7 +48,7 @@ const wlan = new WLAN(config);
 const dhcp = new DHCP(config);
 
 // Set up Network controller
-const netController = new NetController(config, wlan, storage, dhcp);
+const netController = new NetController(config, wlan, storage, dhcp, homeKit);
 
 // Start the web GUI
 const webInterface = new WebUI(config, storage, netController, wlan);

@@ -19,11 +19,12 @@ const Mode = {
 
 class NetController {
 
-  constructor (config, wlan, storage, dhcp) {
+  constructor (config, wlan, storage, dhcp, homekit) {
     this.config = config;
     this.wlan = wlan;
     this.storage = storage;
     this.dhcp = dhcp;
+    this.homekit = homekit;
 
     // The current mode
     this.mode = Mode.STATION;
@@ -57,6 +58,9 @@ class NetController {
   accessPointMode () {
     winston.warn('entering AP mode');
 
+    // Stop homekit
+    this.homekit.stop();
+
     // Host the access point
     this.wlan.accessPointMode();
     this.dhcp.start();
@@ -73,6 +77,12 @@ class NetController {
    */
   stationMode () {
     winston.warn('entering station mode');
+
+    // Start homekit shortly after
+    setTimeout(() => {
+      this.homekit.stop();
+      this.homekit.start();
+    }, 2500);
 
     // Connect to the AP
     let credentials = this.getCredentials();
