@@ -1,18 +1,41 @@
 ---
+# The HomeKit Accessory Protocol port (usually no need to change this)
 hap_port: 51826
-web_port: 3000
+# The web UI port
+web_port: 80
+
+# The UUID seed of the HomeKit device
 uuid: walshnet:accessories:hk-switch
+
+# A nice name for the device in HomeKit
 name: Outlet
+
+# The manufacturer of the device
 manufacturer: Walsh Industries
+
+# Model & serial number details
 model: Rev-1
 serial: IS-01PAULDAMO
+
+# The unique username and pincode used to pair the HomeKit device
 username: DE:AD:BE:EE:F0:00
 pincode: 031-45-154
+
+# The WLAN settings
 wlan:
+  # Configuration for setup AP mode
   ap:
+    # The name of the access point to serve
     ssid: HomeKit Switch
+
+# Configure the switches we will offer for control in HomeKit
 switches:
   -
+    # The nice HomeKit name of this switch
     name: Relay 1
+
+    # The GPIO physical pin number to toggle
     gpio: 4
+
+    # The initial state on boot
     on_default: true
