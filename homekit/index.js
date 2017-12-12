@@ -10,7 +10,7 @@ const uuid = require('hap-nodejs').uuid;
 const storage = require('node-persist');
 const gpio = require('../gpio');
 
-class HomeKitServer {
+class HomeKit {
 
   constructor (config) {
     this.config = config;
@@ -42,11 +42,11 @@ class HomeKitServer {
       // Add any services defined in our configuration
       for (let index = 0; index < this.config.switches.length; index ++) {
         let switchConfig = this.config.switches[index];
-        winston.info("adding service for switch", switchConfig.name);
+        winston.info("adding service for switch", switchConfig.name, "on GPIO", switchConfig.gpio, "with default state", switchConfig.on_default ? 1 : 0);
 
         // Enable the associated GPIO for output
-        gpio.setup(switchConfig.gpio, switchConfig.on_defalt ? gpio.DIR_HIGH : gpio.DIR_LOW);
-        this.stateCache[index] = switchConfig.on_defalt;
+        gpio.setup(switchConfig.gpio, switchConfig.on_default ? gpio.DIR_HIGH : gpio.DIR_LOW);
+        this.stateCache[index] = switchConfig.on_default;
 
         // Add the service for this switch
         this.accessory.addService(Service.Switch, switchConfig.name)
@@ -75,6 +75,16 @@ class HomeKitServer {
       winston.info('HomeKit PIN:', this.config.pincode);
   }
 
+  /**
+   * Destroy the current accessory.
+   */
+  stop () {
+    if (this.accessory) {
+      winston.info('stopping hap-nodejs server');
+      this.accessory.destroy();
+    }
+  }
+
 }
 
-module.exports = HomeKitServer;
+module.exports = HomeKit;

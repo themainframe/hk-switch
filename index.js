@@ -7,10 +7,13 @@ const CONFIG_FILE = 'config.yml';
 
 const yaml = require('yamljs');
 const winston = require('winston');
-const WebInterface = require('./web-interface');
-const HomeKitServer = require('./homekit-server');
-const ConnectivityChecker = require('./connectivity-checker');
-const WLANConfigurer = require('./wlan-configurer');
+const storage = require('node-persist');
+const WebUI = require('./webui');
+const HomeKit = require('./homekit');
+const NetController = require('./net-controller');
+const WLAN = require('./wlan');
+const DHCP = require('./dhcp');
+const DNS = require('./dns');
 
 // Set up Winston for logging
 winston.remove(winston.transports.Console);
@@ -20,6 +23,10 @@ winston.add(winston.transports.Console, {
   colorize: true,
   timestamp: true
 });
+
+// Initialise storage
+winston.info('initialising storage...');
+storage.initSync();
 
 // Parse the configuration file
 let config = {};
@@ -31,23 +38,25 @@ try {
   process.exit();
 }
 
-// Start the web GUI
-const webInterface = new WebInterface(config);
-webInterface.start();
-
 // Start the HomeKit server
-const homeKitServer = new HomeKitServer(config);
-homeKitServer.start();
+const homeKit = new HomeKit(config);
 
 // Set up WLAN Configurer
-const wlanConfigurer = new WLANConfigurer(config);
+const wlan = new WLAN(config);
 
-// Start the connectivity checker
-const connectivityChecker = new ConnectivityChecker(config);
+// Don't start the DHCP server yet, it's controlled by the network controller (netController)
+const dhcp = new DHCP(config);
 
-// When we gain an Internet connection, enter station mode
-connectivityChecker.gainedCallbacks.push(wlanConfigurer.stationMode);
+// Start the DNS server
+const dns = new DNS(config);
+dns.start();
 
-// When we lose an Internet connection, enter AP mode
-connectivityChecker.lostCallbacks.push(wlanConfigurer.accessPointMode);
-connectivityChecker.start();
+// Set up Network controller
+const netController = new NetController(config, wlan, storage, dhcp, homeKit);
+
+// Start the web GUI
+const webInterface = new WebUI(config, storage, netController, wlan);
+webInterface.start();
+
+// Start the network controller
+netController.start();

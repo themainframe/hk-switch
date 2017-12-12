@@ -1,0 +1,6 @@
+{
+  "uid": "hk-switch",
+  "append": true,
+  "script": "index.js",
+  "sourceDir": "/home/pi/hk-switch"
+}
