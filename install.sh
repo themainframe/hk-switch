@@ -36,6 +36,11 @@ rand_hex_byte() {
   echo $(od  -vN "1" -An -tx1 /dev/urandom | tr -d " \n")
 }
 
+# Generate a random 1-digit number
+rand_digit() {
+  echo $((1 + RANDOM % 9))
+}
+
 # We must have at least one argument
 if [ $# -ne 1 ]; then
   echo " ! Usage: ./install.sh PI_HOST"
@@ -122,7 +127,26 @@ fi
 log "Removing stale persistent data..."
 ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "rm -rf /home/pi/hk-switch/persist/*"
 
-# Generate configuration and copy it into place
+# Get the MAC address of the wlan0 interface
+WLAN_HW_ADDR=$(ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "cat /sys/class/net/wlan0/address | tr -d '\n'")
+log "Detected WLAN MAC address (${WLAN_HW_ADDR})"
+
+# Generate a random username
+RAND_USERNAME=$(rand_hex_byte):$(rand_hex_byte):$(rand_hex_byte):$(rand_hex_byte):$(rand_hex_byte):$(rand_hex_byte)
+
+# Generate a serial number from the CPU's serial
+SERIAL=HKS-$(ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "cat /proc/cpuinfo | grep Serial | cut -d' ' -f2  | tr -d '\n'")
+
+# Generate a HomeKit PIN
+HOMEKIT_PIN=$(rand_digit)$(rand_digit)$(rand_digit)-$(rand_digit)$(rand_digit)-$(rand_digit)$(rand_digit)$(rand_digit)
+log "Generated HomeKit pairing PIN <${HOMEKIT_PIN}>"
+
+# Generate the setup SSID
+SETUP_SSID=HKSwitch-${WLAN_HW_ADDR:9:8}
+SETUP_SSID=${SETUP_SSID//:}
+log "Generated setup SSID (${SETUP_SSID})"
+
+# Generate configuration
 cat > /tmp/config.yml <<EOL
 ---
 hap_port: 51826
@@ -131,18 +155,22 @@ uuid: walshnet:accessories:hk-switch
 name: Outlet
 manufacturer: Walsh Industries
 model: Rev-1
-serial: HKS-${RANDOM}-${RANDOM}
-username: DE:AD:BE:EE:F0:00
-pincode: 031-45-154
+serial: ${SERIAL}
+username: ${RAND_USERNAME}
+pincode: ${HOMEKIT_PIN}
 wlan:
   interface: wlan0
-  mac: b8:27:eb:8e:7c:bd
+  mac: ${WLAN_HW_ADDR}
   broadcast: 172.16.0.255
   ap:
-    ssid: HomeKitSwitch
+    ssid: ${SETUP_SSID}
 switches:
   -
     name: Relay 1
     gpio: 11
-    on_default: true
+    on_default: false
 EOL
+
+# Copy the generate configuration into place
+log "Copying configuration into place..."
+scp -q -i keys/${PI_HOST}.key /tmp/config.yml ${PI_USERNAME}@${PI_HOST}:/home/pi/hk-switch/config.yml
