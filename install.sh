@@ -69,22 +69,22 @@ fi
 
 # Install scripts
 log "Removing existing package..."
-#ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "rm -rf /home/pi/hk-switch"
+ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "rm -rf /home/pi/hk-switch"
 
 log "Copying package into place..."
-#rsync -e "ssh -i keys/${PI_HOST}.key" -rqa --exclude="node_modules" --exclude="keys" --exclude="configuration" --exclude=".git" . ${PI_USERNAME}@${PI_HOST}:/home/pi/hk-switch
+rsync -e "ssh -i keys/${PI_HOST}.key" -rqa --exclude="node_modules" --exclude="keys" --exclude="configuration" --exclude=".git" . ${PI_USERNAME}@${PI_HOST}:/home/pi/hk-switch
 
 log "Installing dpkg dependencies..."
-#ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "sudo apt-get update -yqq"
-#ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "sudo apt -yqq install git libavahi-compat-libdnssd-dev"
+ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "sudo apt-get update -yqq"
+ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "sudo apt -yqq install git libavahi-compat-libdnssd-dev"
 
 log "Installing Node.js..."
-#ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "wget -q -O node.tar.xz ${NODE_TARBALL_URL} && tar xf node.tar.xz"
+ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "wget -q -O node.tar.xz ${NODE_TARBALL_URL} && tar xf node.tar.xz"
 NODE_SOURCE_DIR=$(ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "tar --list -f node.tar.xz | head -n 1 | tr -d '\n'")
 log "Extracted Node.js to ${NODE_SOURCE_DIR}..."
 
 log "Copying Node.js binaries into place..."
-#ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "sudo cp -r ./${NODE_SOURCE_DIR}/* /usr/"
+ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "sudo cp -r ./${NODE_SOURCE_DIR}/* /usr/"
 
 # Check Node.js version
 NODE_INSTALLED_VERSION=$(ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "node -v | tr -d '\n'")
@@ -98,16 +98,16 @@ fi
 # Install hk-switch deps
 log "Installing hk-switch NPM dependencies..."
 log "(this can take a while while node-gyp modules are built)..."
-#ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "cd hk-switch && npm install"
+ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "cd hk-switch && npm install"
 
 # Copy DHCP client configuration into place
 log "Configuring DHCP client (dhcpcd)..."
-#scp -q -i keys/${PI_HOST}.key configuration/dhcpcd.conf ${PI_USERNAME}@${PI_HOST}:/tmp/dhcpcd.conf
-#ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "sudo mv /tmp/dhcpcd.conf /etc/dhcpcd.conf"
+scp -q -i keys/${PI_HOST}.key configuration/dhcpcd.conf ${PI_USERNAME}@${PI_HOST}:/tmp/dhcpcd.conf
+ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "sudo mv /tmp/dhcpcd.conf /etc/dhcpcd.conf"
 
 # Install forever
 log "Installing forever..."
-#ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "sudo npm install -g forever"
+ssh -q -i keys/${PI_HOST}.key -t -t ${PI_USERNAME}@${PI_HOST} "sudo npm install -g forever"
 
 # Add an entry to our local rc to start at boot
 log "Checking for rc.local entry..."
