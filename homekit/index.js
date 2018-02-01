@@ -64,25 +64,34 @@ class HomeKit {
           });
       }
 
-      // Publish us via mDNS
-      this.accessory.publish({
-        port: this.config.hap_port,
-        username: this.config.username,
-        pincode: this.config.pincode
-      })
+      // Publish our accessory
+      this.publish();
 
       // Output information for HomeKit setup
       winston.info('HomeKit PIN:', this.config.pincode);
   }
 
   /**
+   * Publish, or republish the accessory.
+   */
+  publish () {
+
+    // Publish us via mDNS
+    winston.info('publishing HAP accessory...');
+    this.accessory.publish({
+      port: this.config.hap_port,
+      username: this.config.username,
+      pincode: this.config.pincode
+    })
+
+  }
+
+  /**
    * Destroy the current accessory.
    */
   stop () {
-    if (this.accessory) {
-      winston.info('stopping hap-nodejs server');
-      this.accessory.destroy();
-    }
+    winston.info('stopping hap-nodejs server');
+    this.accessory._server.stop();
   }
 
 }

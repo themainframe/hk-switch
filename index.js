@@ -60,3 +60,6 @@ webInterface.start();
 
 // Start the network controller
 netController.start();
+
+// Start the homekit server
+homeKit.start();
