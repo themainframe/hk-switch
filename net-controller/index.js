@@ -133,8 +133,7 @@ class NetController {
           } else {
             if (!this.hasRestartedHapServer) {
               winston.info('we are now online - restarting the HAP server');
-              this.homekit.stop();
-              this.homekit.publish();
+              this.homekit.start();
               this.hasRestartedHapServer = true;
             }
           }
