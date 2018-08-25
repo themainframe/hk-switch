@@ -91,7 +91,9 @@ class HomeKit {
    */
   stop () {
     winston.info('stopping hap-nodejs server');
-    this.accessory._server.stop();
+    if (this.accessory) {
+      this.accessory._server.stop();
+    }
   }
 
 }
