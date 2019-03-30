@@ -87,7 +87,7 @@ class HomeKit {
     for (let index = 0; index < this.accessories.length; index ++) {
       winston.info('publishing accessory', this.accessories[index].displayName);
       this.accessories[index].publish({
-        port: this.config.hap_port,
+        port: this.config.hap_port + index,
         username: this.config.username,
         pincode: this.config.pincode
       })
