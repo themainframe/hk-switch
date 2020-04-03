@@ -14,7 +14,7 @@ class HomeKit {
 
   constructor (config) {
     this.config = config;
-    this.accessories = [];
+    this.accessory = null;
     this.stateCache = {};
   }
 
@@ -25,24 +25,22 @@ class HomeKit {
 
       // Create the accessory
       winston.info('setting up the hap-nodejs server');
+      this.accessory = new Accessory(this.config.name, uuid.generate(this.config.uuid));
 
-      // Add any accessories defined in our configuration
+      // Listen for the accessory being identified
+      this.accessory.on('identify', (paired, callback) => {
+        winston.info('we have been asked to identify');
+        callback();
+      });
+
+      // Add the accessory information service
+      this.accessory.getService(Service.AccessoryInformation)
+        .setCharacteristic(Characteristic.Manufacturer, this.config.manufacturer)
+        .setCharacteristic(Characteristic.Model, this.config.model)
+        .setCharacteristic(Characteristic.SerialNumber, this.config.serial);
+
+      // Add any services defined in our configuration
       for (let index = 0; index < this.config.switches.length; index ++) {
-
-        var accessory = new Accessory(this.config.name, uuid.generate(this.config.uuid));
-
-        // Listen for the accessory being identified
-        accessory.on('identify', (paired, callback) => {
-          winston.info('we have been asked to identify');
-          callback();
-        });
-
-        // Add the accessory information service
-        accessory.getService(Service.AccessoryInformation)
-          .setCharacteristic(Characteristic.Manufacturer, this.config.manufacturer)
-          .setCharacteristic(Characteristic.Model, this.config.model)
-          .setCharacteristic(Characteristic.SerialNumber, this.config.serial);
-
         let switchConfig = this.config.switches[index];
         winston.info("adding service for switch", switchConfig.name, "on GPIO", switchConfig.gpio, "with default state", switchConfig.on_default ? 1 : 0);
 
@@ -51,7 +49,7 @@ class HomeKit {
         this.stateCache[index] = switchConfig.on_default;
 
         // Add the service for this switch
-        accessory.addService(Service.Switch, switchConfig.name)
+        this.accessory.addService(new Service.Switch(switchConfig.name, "switch-" + index.toString()))
           .getCharacteristic(Characteristic.On)
           .on('set', (value, callback) => {
             winston.info(switchConfig.name, "is changing state, now", value);
@@ -64,12 +62,9 @@ class HomeKit {
             winston.info(switchConfig.name, "was asked to provide state, is currently", this.stateCache[index] ? 1 : 0);
             callback(null, this.stateCache[index]);
           });
-
-        // Enlist the accessory
-        this.accessories.push(accessory);
       }
 
-      // Publish our accessories
+      // Publish our accessory
       this.publish();
 
       // Output information for HomeKit setup
@@ -82,16 +77,12 @@ class HomeKit {
   publish () {
 
     // Publish us via mDNS
-    winston.info('publishing HAP accessories...');
-
-    for (let index = 0; index < this.accessories.length; index ++) {
-      winston.info('publishing accessory', this.accessories[index].displayName);
-      this.accessories[index].publish({
-        port: this.config.hap_port + index,
-        username: this.config.username,
-        pincode: this.config.pincode
-      })
-    }
+    winston.info('publishing HAP accessory...');
+    this.accessory.publish({
+      port: this.config.hap_port,
+      username: this.config.username,
+      pincode: this.config.pincode
+    })
 
   }
 
@@ -99,10 +90,9 @@ class HomeKit {
    * Destroy the current accessory.
    */
   stop () {
-    winston.info('stopping hap-nodejs server...');
-    for (let index = 0; index < this.accessories.length; index ++) {
-      winston.info('stopping accessory', this.accessories[index].displayName);
-      this.accessories[index]._server.stop();
+    winston.info('stopping hap-nodejs server');
+    if (this.accessory) {
+      this.accessory._server.stop();
     }
   }
 
