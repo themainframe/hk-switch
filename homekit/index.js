@@ -42,11 +42,28 @@ class HomeKit {
       // Add any services defined in our configuration
       for (let index = 0; index < this.config.switches.length; index ++) {
         let switchConfig = this.config.switches[index];
-        winston.info("adding service for switch", switchConfig.name, "on GPIO", switchConfig.gpio, "with default state", switchConfig.on_default ? 1 : 0);
 
+        // Decide if we should use the default state or the existing state (if one exists)
+        let initialState = switchConfig.on_default;
+        if (this.stateCache.hasOwnProperty(index)) {
+          // Already have a state record
+          winston.info(
+            "re-starting: will keep state",
+            this.stateCache[index] ? 1 : 0,
+            "for switch", switchConfig.name
+          );
+          initialState = this.stateCache[index];
+        }
+
+        winston.info(
+          "adding service for switch", switchConfig.name,
+          "on GPIO", switchConfig.gpio,
+          "with state", initialState ? 1 : 0
+        );
+        
         // Enable the associated GPIO for output
-        gpio.setup(switchConfig.gpio, switchConfig.on_default ? gpio.DIR_HIGH : gpio.DIR_LOW);
-        this.stateCache[index] = switchConfig.on_default;
+        gpio.setup(switchConfig.gpio, initialState ? gpio.DIR_HIGH : gpio.DIR_LOW);
+        this.stateCache[index] = initialState;
 
         // Add the service for this switch
         this.accessory.addService(new Service.Switch(switchConfig.name, "switch-" + index.toString()))
