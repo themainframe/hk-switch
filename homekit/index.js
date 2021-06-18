@@ -9,6 +9,7 @@ const Characteristic = require('hap-nodejs').Characteristic;
 const uuid = require('hap-nodejs').uuid;
 const storage = require('node-persist');
 const gpio = require('../gpio');
+const { exec } = require("child_process");
 
 class HomeKit {
 
@@ -44,12 +45,12 @@ class HomeKit {
         let switchConfig = this.config.switches[index];
 
         // Decide if we should use the default state or the existing state (if one exists)
-        let initialState = switchConfig.on_default;
+        let initialState = switchConfig.default;
         if (this.stateCache.hasOwnProperty(index)) {
           // Already have a state record
           winston.info(
             "re-starting: will keep state",
-            this.stateCache[index] ? 1 : 0,
+            this.stateCache[index],
             "for switch", switchConfig.name
           );
           initialState = this.stateCache[index];
@@ -57,23 +58,33 @@ class HomeKit {
 
         winston.info(
           "adding service for switch", switchConfig.name,
-          "on GPIO", switchConfig.gpio,
-          "with state", initialState ? 1 : 0
+          "on ioplus", switchConfig.ioplus, "DAC", switchConfig.dac,
+          "with state", initialState
         );
         
         // Enable the associated GPIO for output
-        gpio.setup(switchConfig.gpio, initialState ? gpio.DIR_HIGH : gpio.DIR_LOW);
         this.stateCache[index] = initialState;
 
         // Add the service for this switch
-        this.accessory.addService(new Service.Switch(switchConfig.name, "switch-" + index.toString()))
-          .getCharacteristic(Characteristic.On)
+        this.accessory.addService(new Service.Lightbulb(switchConfig.name, "switch-" + index.toString()))
+          .getCharacteristic(Characteristic.Brightness)
           .on('set', (value, callback) => {
-            winston.info(switchConfig.name, "is changing state, now", value);
-            gpio.write(switchConfig.gpio, value, () => {
-              this.stateCache[index] = value;
-              callback();
-            });
+            winston.info(switchConfig.name, "is changing value, now", value);
+
+            // Calculate the 1-10 scaled value
+            const scaledValue = value / 10;
+
+            // Make the change and fire the callback 
+            const command = "ioplus " + switchConfig.ioplus + " dacwr " + switchConfig.dac + " " + scaledValue;
+            winston.info(switchConfig.name, "issuing comamnd:", command);
+            
+            try {
+              exec(command);
+            } catch (e) {
+              winston.error(switchConfig.name, "ioplus error: " + e);
+            }
+            
+            callback();
           })
           .on('get', (callback) => {
             winston.info(switchConfig.name, "was asked to provide state, is currently", this.stateCache[index] ? 1 : 0);
