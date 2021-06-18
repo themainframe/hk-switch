@@ -84,7 +84,9 @@ class HomeKit {
               winston.error(switchConfig.name, "ioplus error: " + e);
             }
             
+            this.stateCache[index] = value;
             callback();
+            
           })
           .on('get', (callback) => {
             winston.info(switchConfig.name, "was asked to provide state, is currently", this.stateCache[index] ? 1 : 0);
