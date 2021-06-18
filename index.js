@@ -41,22 +41,32 @@ try {
 // Start the HomeKit server
 const homeKit = new HomeKit(config);
 
-// Set up WLAN Configurer
-const wlan = new WLAN(config);
+// Should we use WLAN?
+if (config.hasOwnProperty('wlan') && config.wlan) {
 
-// Don't start the DHCP server yet, it's controlled by the network controller (netController)
-const dhcp = new DHCP(config);
+  // Set up WLAN Configurer
+  const wlan = new WLAN(config);
 
-// Start the DNS server
-const dns = new DNS(config);
-dns.start();
+  // Don't start the DHCP server yet, it's controlled by the network controller (netController)
+  const dhcp = new DHCP(config);
+  
+    // Start the DNS server
+  const dns = new DNS(config);
+  dns.start();
 
-// Set up Network controller
-const netController = new NetController(config, wlan, storage, dhcp, homeKit);
+  // Set up Network controller
+  const netController = new NetController(config, wlan, storage, dhcp, homeKit);
 
-// Start the web GUI
-const webInterface = new WebUI(config, storage, netController, wlan);
-webInterface.start();
+  // Start the web GUI
+  const webInterface = new WebUI(config, storage, netController, wlan);
+  webInterface.start();
 
-// Start the network controller
-netController.start();
+  // Start the network controller
+  netController.start();
+
+} else {
+
+  // Assume networking is all sorted out already and start the HAP server...
+  homeKit.start();
+
+}
