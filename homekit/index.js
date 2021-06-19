@@ -45,7 +45,9 @@ class HomeKit {
         let switchConfig = this.config.switches[index];
 
         // Decide if we should use the default state or the existing state (if one exists)
-        let initialState = switchConfig.default;
+        let initialBrightness = switchConfig.default;
+        let initialOnOff = initialBrightness ? 1 : 0;
+
         if (this.stateCache.hasOwnProperty(index)) {
           // Already have a state record
           winston.info(
@@ -53,45 +55,68 @@ class HomeKit {
             this.stateCache[index],
             "for switch", switchConfig.name
           );
-          initialState = this.stateCache[index];
+          initialBrightness = this.stateCache[index].brightness;
+          initialOnOff = this.stateCache[index].onOff;
         }
 
         winston.info(
           "adding service for switch", switchConfig.name,
           "on ioplus", switchConfig.ioplus, "DAC", switchConfig.dac,
-          "with state", initialState
+          "with on/off", initialOnOff, "and brightness", initialBrightness
         );
         
         // Enable the associated GPIO for output
-        this.stateCache[index] = initialState;
+        this.stateCache[index] = {
+          brightness: initialBrightness,
+          onOff: initialOnOff
+        };
 
         // Add the service for this switch
-        this.accessory.addService(new Service.Lightbulb(switchConfig.name, "switch-" + index.toString()))
-          .getCharacteristic(Characteristic.Brightness)
+        const lightbulbService = new Service.Lightbulb(switchConfig.name, "switch-" + index.toString());
+        
+        // Add dimming characteristic
+        lightbulbService.getCharacteristic(Characteristic.Brightness)
           .on('set', (value, callback) => {
-            winston.info(switchConfig.name, "is changing value, now", value);
 
-            // Calculate the 1-10 scaled value
+            winston.info(switchConfig.name, "is changing brightness, now", value);
+            this.stateCache[index].brightness = value;
+
+            // Scale the value & run the ioplus update command
             const scaledValue = value / 10;
-
-            // Make the change and fire the callback 
             const command = "ioplus " + switchConfig.ioplus + " dacwr " + switchConfig.dac + " " + scaledValue;
-            winston.info(switchConfig.name, "issuing comamnd:", command);
-            
-            try {
-              exec(command);
-            } catch (e) {
-              winston.error(switchConfig.name, "ioplus error: " + e);
-            }
-            
-            this.stateCache[index] = value;
+            winston.info(switchConfig.name, "issuing command:", command);
+            exec(command);
+
+            // Tell HAP we've finished making changes
             callback();
-            
+
           })
           .on('get', (callback) => {
-            winston.info(switchConfig.name, "was asked to provide state, is currently", this.stateCache[index] ? 1 : 0);
-            callback(null, this.stateCache[index]);
+            winston.info(switchConfig.name, "was asked to provide brightness, is currently", this.stateCache[index].brightness);
+            callback(null, this.stateCache[index].brightness);
           });
+
+        // Add on/off characteristic
+        lightbulbService.getCharacteristic(Characteristic.On)
+          .on('set', (value, callback) => {
+            winston.info(switchConfig.name, "is changing on/off state, now", value);
+            this.stateCache[index].onOff = value;
+            
+            // Scale the value
+            const scaledValue =  value ? (this.stateCache[index].brightness / 10) : 0;
+            const command = "ioplus " + switchConfig.ioplus + " dacwr " + switchConfig.dac + " " + scaledValue;
+            winston.info(switchConfig.name, "issuing command:", command);
+            exec(command);
+            
+            // Tell HAP we've finished making changes
+            callback();
+          })
+          .on('get', (callback) => {
+            winston.info(switchConfig.name, "was asked to provide on/off state, is currently", this.stateCache[index].onOff);
+            callback(null, this.stateCache[index].onOff ? true : false);
+          });
+
+        this.accessory.addService(lightbulbService);
       }
 
       // Publish our accessory
