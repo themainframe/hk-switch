@@ -14,7 +14,7 @@
     "bootstrap": "^3",
     "dhcp": "https://github.com/themainframe/node-dhcp",
     "ejs": "^2.5.0",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "hap-nodejs": "^0.4.33",
     "is-online": "^7.0.0",
     "node-named": "^0.0.1",
